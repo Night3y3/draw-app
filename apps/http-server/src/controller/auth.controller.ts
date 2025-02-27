@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { JwtPayload, sign, SignOptions } from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET } from "@repo/backend-common/config";
 
 export const SignUp = async (req: Request, res: Response): Promise<void> => {
   //db logic
