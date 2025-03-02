@@ -14,3 +14,9 @@ export const SignInSchema = CreateUserSchema.pick({
 });
 
 export type SignInInput = z.infer<typeof SignInSchema>;
+
+export const CreateRoomSchema = z.object({
+  name: z.string().min(3).max(20),
+});
+
+export type CreateRoomInput = z.infer<typeof CreateRoomSchema>;

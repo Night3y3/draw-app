@@ -12,6 +12,8 @@ export const SignUp = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  // No need to check user already exists or not as it is checked via prisma schema @unique field
+
   try {
     const user = await prisma.user.create({
       data: {
