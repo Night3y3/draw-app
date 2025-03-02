@@ -1,16 +1,17 @@
-import { z } from "zod";
+const { z } = require("zod");
 
-export const CreateUserSchema = z.object({
+const CreateUserSchema = z.object({
   username: z.string(),
   password: z.string(),
   name: z.string(),
 });
 
-export type CreateUserInput = z.infer<typeof CreateUserSchema>;
-
-export const SignInSchema = CreateUserSchema.pick({
+const SignInSchema = CreateUserSchema.pick({
   username: true,
   password: true,
 });
 
-export type SignInInput = z.infer<typeof SignInSchema>;
+module.exports = {
+  CreateUserSchema,
+  SignInSchema,
+};

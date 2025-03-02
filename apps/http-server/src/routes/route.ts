@@ -5,12 +5,12 @@ import { SignIn, SignOut, SignUp } from "../controller/auth.controller";
 
 const router: Router = Router();
 
-router.get("/signup", SignUp);
+router.post("/signup", SignUp);
 
-router.get("/login", SignIn);
+router.post("/login", SignIn);
 
 router.get("/logout", SignOut);
 
-router.get("/create-room", middleware, CreateRoom);
+router.post("/create-room", middleware, CreateRoom);
 
 export default router;

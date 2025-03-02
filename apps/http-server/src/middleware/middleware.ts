@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+const { JWT_SECRET } = require("@repo/backend-common/config");
 
 export function middleware(
   req: Request,

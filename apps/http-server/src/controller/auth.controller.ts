@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { JwtPayload, sign, SignOptions } from "jsonwebtoken";
-import { JWT_SECRET } from "@repo/backend-common/config";
-import { CreateUserSchema, SignInSchema } from "@repo/common/types";
-import prismaClient from "@repo/db/client";
+const { JWT_SECRET } = require("@repo/backend-common/config");
+const { CreateUserSchema, SignInSchema } = require("@repo/common/types");
+const prismaClient = require("@repo/db/client");
 
 export const SignUp = async (req: Request, res: Response): Promise<void> => {
   const parsedData = CreateUserSchema.safeParse(req.body);
