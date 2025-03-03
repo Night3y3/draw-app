@@ -28,3 +28,32 @@ export const CreateRoom = async (
     res.send(403).send({ message: "Room already exists" });
   }
 };
+
+export const getPreviousRoomChats = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const roomId = Number(req.params.roomId);
+  const messages = await prisma.chat.findMany({
+    where: {
+      roomId: roomId,
+    },
+    orderBy: {
+      id: "desc",
+    },
+    take: 4,
+  });
+
+  res.status(200).send({ ...messages });
+};
+
+export const getRoomId = async (req: Request, res: Response): Promise<void> => {
+  const slug = req.params.slug;
+  const room = await prisma.room.findFirst({
+    where: {
+      slug,
+    },
+  });
+
+  res.status(200).send({ ...room });
+};
