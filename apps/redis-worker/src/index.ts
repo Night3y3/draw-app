@@ -7,7 +7,7 @@ const roomIdCache: { [slug: string]: number } = {};
 
 const worker = new Worker(
   "chat-messages",
-  async (job) => {
+  async (job: Job) => {
     const { slug, message, userId } = job.data;
 
     try {
@@ -41,7 +41,7 @@ const worker = new Worker(
   },
   {
     connection: {
-      url: REDIS_URL, // Full Redis URL from Redis Cloud
+      url: REDIS_URL,
     },
   }
 );

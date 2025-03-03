@@ -98,11 +98,20 @@ wss.on(
           }
         });
 
-        chatQueue.add("save-chat", {
-          slug,
-          message,
-          userId,
-        });
+        chatQueue.add(
+          "save-chat",
+          {
+            slug,
+            message,
+            userId,
+          },
+          {
+            attempts: 3,
+            backoff: { type: "exponential", delay: 5000 },
+            removeOnComplete: true,
+            removeOnFail: false,
+          }
+        );
       }
     });
 
