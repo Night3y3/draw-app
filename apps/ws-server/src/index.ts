@@ -106,10 +106,10 @@ wss.on(
             userId,
           },
           {
-            attempts: 3,
-            backoff: { type: "exponential", delay: 5000 },
-            removeOnComplete: true,
-            removeOnFail: false,
+            attempts: 3, // Retry 3 times
+            backoff: { type: "exponential", delay: 5000 }, // Wait 5s, 10s, 20s
+            removeOnComplete: true, // Remove job from Redis on success
+            removeOnFail: false, // Keep failed jobs for inspection
           }
         );
       }
