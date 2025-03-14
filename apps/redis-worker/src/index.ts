@@ -29,7 +29,7 @@ const worker = new Worker(
       // Save to Chat table
       await prisma.chat.create({
         data: {
-          roomId,
+          roomId: Number(roomId),
           message,
           userId,
         },

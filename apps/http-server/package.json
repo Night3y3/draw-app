@@ -12,6 +12,7 @@
     "@repo/backend-common": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "tsx": "^4.19.3"
@@ -22,6 +23,7 @@
   "description": "",
   "dependencies": {
     "@repo/db": "workspace:*",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
     "express-serve-static-core": "^0.1.1",
