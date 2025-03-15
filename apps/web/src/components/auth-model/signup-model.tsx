@@ -3,13 +3,15 @@
 import type React from "react"
 
 import { useState } from "react"
-import { X } from "lucide-react"
+import { X, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface SignupModalProps {
     isOpen: boolean
@@ -22,14 +24,56 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [agreeTerms, setAgreeTerms] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Handle signup logic here
-        console.log({ name, email, password, agreeTerms })
+        setError(null)
+        setIsLoading(true)
 
-        // For demo purposes, redirect to dashboard
-        window.location.href = "/dashboard"
+        try {
+            // Replace with your actual API endpoint
+            const response = await axios.post("/api/auth/signup", {
+                name,
+                email,
+                password,
+            })
+
+            // If signup is successful, show success message and redirect to login
+            console.log("Signup successful:", response.data)
+            setSuccess(true)
+
+            // Redirect to login after a short delay
+            setTimeout(() => {
+                resetForm()
+                onLoginClick() // Switch to login modal
+            }, 2000)
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                // Handle specific error status codes
+                if (err.response.status === 401) {
+                    setError(err.response.data.message || "User already exists. Please log in instead.")
+                } else {
+                    setError("An error occurred during signup. Please try again.")
+                }
+            } else {
+                setError("Network error. Please check your connection and try again.")
+            }
+            console.error("Signup error:", err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const resetForm = () => {
+        setName("")
+        setEmail("")
+        setPassword("")
+        setAgreeTerms(false)
+        setError(null)
+        setSuccess(false)
     }
 
     return (
@@ -43,7 +87,16 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                         transition={{ duration: 0.2 }}
                         className="relative bg-background rounded-lg shadow-lg border border-border max-w-md w-full p-6"
                     >
-                        <Button variant="ghost" size="icon" className="absolute right-4 top-4" onClick={onClose}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-4 top-4"
+                            onClick={() => {
+                                resetForm()
+                                onClose()
+                            }}
+                            disabled={isLoading}
+                        >
                             <X className="h-4 w-4" />
                             <span className="sr-only">Close</span>
                         </Button>
@@ -53,6 +106,20 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                             <p className="text-sm text-muted-foreground mt-1">Join CollabCanvas and start creating together</p>
                         </div>
 
+                        {error && (
+                            <Alert variant="destructive" className="mb-4">
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
+
+                        {success && (
+                            <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+                                <AlertDescription className="text-green-800">
+                                    Account created successfully! Redirecting to login...
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
@@ -61,6 +128,7 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                                     placeholder="John Doe"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    disabled={isLoading || success}
                                     required
                                 />
                             </div>
@@ -73,6 +141,7 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                                     placeholder="you@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    disabled={isLoading || success}
                                     required
                                 />
                             </div>
@@ -85,6 +154,7 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    disabled={isLoading || success}
                                     required
                                 />
                                 <p className="text-xs text-muted-foreground">Must be at least 8 characters long</p>
@@ -95,6 +165,7 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                                     id="terms"
                                     checked={agreeTerms}
                                     onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
+                                    disabled={isLoading || success}
                                     required
                                 />
                                 <Label htmlFor="terms" className="text-sm">
@@ -109,15 +180,32 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
                                 </Label>
                             </div>
 
-                            <Button type="submit" className="w-full">
-                                Sign up
+                            <Button type="submit" className="w-full" disabled={isLoading || success || !agreeTerms}>
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating account...
+                                    </>
+                                ) : success ? (
+                                    "Account Created!"
+                                ) : (
+                                    "Sign up"
+                                )}
                             </Button>
                         </form>
 
                         <div className="mt-6 text-center text-sm">
                             <p className="text-muted-foreground">
                                 Already have an account?{" "}
-                                <Button variant="link" className="p-0 h-auto" onClick={onLoginClick}>
+                                <Button
+                                    variant="link"
+                                    className="p-0 h-auto"
+                                    onClick={() => {
+                                        resetForm()
+                                        onLoginClick()
+                                    }}
+                                    disabled={isLoading}
+                                >
                                     Log in
                                 </Button>
                             </p>

@@ -12,4 +12,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send({ message: "Woking" });
 });
 
-app.listen(8000);
+app.listen(8000, () => {
+  console.log("Server is running on port 8000");
+});

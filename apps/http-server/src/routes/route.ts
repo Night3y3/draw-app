@@ -3,6 +3,7 @@ import { middleware } from "../middleware/middleware";
 import {
   CreateRoom,
   getPreviousRoomChats,
+  getRoomId,
 } from "../controller/room.controller";
 import { SignIn, SignOut, SignUp } from "../controller/auth.controller";
 
