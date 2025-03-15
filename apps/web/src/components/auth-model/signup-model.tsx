@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { client } from "@/utils/http-client"
 
 interface SignupModalProps {
     isOpen: boolean
@@ -29,43 +30,45 @@ export default function SignupModal({ isOpen, onClose, onLoginClick }: SignupMod
     const [success, setSuccess] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError(null)
-        setIsLoading(true)
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
 
         try {
-            // Replace with your actual API endpoint
-            const response = await axios.post("/api/auth/signup", {
+            await client.post("/signup", {
                 name,
-                email,
+                username: email,
                 password,
-            })
+            });
 
-            // If signup is successful, show success message and redirect to login
-            console.log("Signup successful:", response.data)
-            setSuccess(true)
+            setSuccess(true);
 
-            // Redirect to login after a short delay
             setTimeout(() => {
-                resetForm()
-                onLoginClick() // Switch to login modal
-            }, 2000)
+                resetForm();
+                onLoginClick();
+            }, 2000);
         } catch (err) {
-            if (axios.isAxiosError(err) && err.response) {
-                // Handle specific error status codes
-                if (err.response.status === 401) {
-                    setError(err.response.data.message || "User already exists. Please log in instead.")
+            if (axios.isAxiosError(err)) {
+                if (err.response) {
+                    // Handle specific error status codes
+                    if (err.response.status === 401) {
+                        setError(err.response.data.message || "User already exists. Please log in instead.");
+                    } else {
+                        setError("An error occurred during signup. Please try again.");
+                    }
+                } else if (err.code === "ERR_NETWORK") {
+                    setError("Network error. CORS issue or server might be down. Please check your backend configuration.");
                 } else {
-                    setError("An error occurred during signup. Please try again.")
+                    setError("Network error. Please check your connection and try again.");
                 }
             } else {
-                setError("Network error. Please check your connection and try again.")
+                setError("Unexpected error occurred. Please try again.");
             }
-            console.error("Signup error:", err)
+            console.error("Signup error:", err);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const resetForm = () => {
         setName("")

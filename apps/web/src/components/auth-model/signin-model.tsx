@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { X, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { client } from "@/utils/http-client"
+import useAuthStore from "@repo/store/auth"
+import useUserStore from "@repo/store/user"
 
 interface LoginModalProps {
     isOpen: boolean
@@ -27,6 +30,15 @@ export default function LoginModal({ isOpen, onClose, onSignupClick }: LoginModa
     const [rememberMe, setRememberMe] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const addAccessToken = useAuthStore((state) => state.addAccessToken);
+    const addUserData = useUserStore((state) => state.setUserData);
+    const accessToken = useAuthStore((state) => state.accessToken);
+
+    useEffect(() => {
+        if (accessToken) {
+            console.log("Access token updated:", accessToken);
+        }
+    }, [accessToken]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -34,14 +46,19 @@ export default function LoginModal({ isOpen, onClose, onSignupClick }: LoginModa
         setIsLoading(true)
 
         try {
-            // Replace with your actual API endpoint
-            const response = await axios.post("/api/auth/login", {
-                email,
+            const response = await client.post("/login", {
+                username: email,
                 password,
             })
 
-            // If login is successful, redirect to dashboard
-            console.log("Login successful:", response.data)
+            addAccessToken(response.data.token)
+            addUserData({
+                id: response.data.id,
+                email: response.data.email,
+                name: response.data.name,
+                photo: response.data.photo,
+            })
+
             router.push("/dashboard")
             onClose()
         } catch (err) {

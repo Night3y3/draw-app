@@ -7,9 +7,9 @@ interface AuthState {
 }
 
 const useAuthStore = create<AuthState>((set) => ({
-  accessToken: "", // Initial state
-  addAccessToken: (token: string) => set({ accessToken: token }), // Function to set the access token
-  removeAccessToken: () => set({ accessToken: "" }), // Function to remove the access token
+  accessToken: "",
+  addAccessToken: (token: string) => set({ accessToken: token }),
+  removeAccessToken: () => set({ accessToken: "" }),
 }));
 
 export default useAuthStore;

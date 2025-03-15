@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { LogOut, User } from "lucide-react"
 import Link from "next/link"
@@ -14,6 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import useUserStore from "@repo/store/user"
 
 export default function ProfileDropdown() {
     // In a real app, you would get this from your auth context/provider
@@ -22,12 +23,11 @@ export default function ProfileDropdown() {
 
     // Get the first letter of the name for the avatar
     const firstLetter = userName.charAt(0).toUpperCase()
+    const userData = useUserStore((state) => state)
 
     // For demo purposes, set a random name on component mount
     useEffect(() => {
-        const names = ["Alex Johnson", "Taylor Smith", "Jordan Williams", "Casey Brown", "Morgan Davis"]
-        const randomName = names[Math.floor(Math.random() * names.length)]
-        setUserName(randomName)
+        setUserName(userData.name)
     }, [])
 
     return (
@@ -54,7 +54,7 @@ export default function ProfileDropdown() {
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">{userName}</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            {userName.toLowerCase().replace(/\s/g, "")}@example.com
+                            {userData.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
