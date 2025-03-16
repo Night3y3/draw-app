@@ -2,11 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Paintbrush, ArrowLeft, Plus, LogIn, Copy, Check } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import useAuthStore from "@repo/store/auth"
+import useWebSocketStore from "@repo/store/ws"
+import { WS_URL } from "@/config";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,11 +23,18 @@ export default function Dashboard() {
     const [roomCode, setRoomCode] = useState("")
     const [copied, setCopied] = useState(false)
     const [createdRoomCode, setCreatedRoomCode] = useState("")
+    const accessToken = useAuthStore((state) => state.accessToken);
+    const addWS = useWebSocketStore((state) => state.setWs);
 
     // Generate a random room code when creating a room
     const generateRoomCode = () => {
         return Math.random().toString(36).substring(2, 8).toUpperCase()
     }
+
+    useEffect(() => {
+        const ws = new WebSocket(`${WS_URL}?token=${accessToken}`)
+        addWS(ws)
+    })
 
     const handleCreateRoom = (e: React.FormEvent) => {
         e.preventDefault()

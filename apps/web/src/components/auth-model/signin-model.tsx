@@ -32,13 +32,6 @@ export default function LoginModal({ isOpen, onClose, onSignupClick }: LoginModa
     const [error, setError] = useState<string | null>(null)
     const addAccessToken = useAuthStore((state) => state.addAccessToken);
     const addUserData = useUserStore((state) => state.setUserData);
-    const accessToken = useAuthStore((state) => state.accessToken);
-
-    useEffect(() => {
-        if (accessToken) {
-            console.log("Access token updated:", accessToken);
-        }
-    }, [accessToken]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
